@@ -105,8 +105,8 @@ module.exports = class VizJsonNode
   getSourceToTargetList = (srcToTarget, entryNode, topicCounts) ->
     entryAndVal = {}
     srcToTargetList = for index, node of srcToTarget
-      val = node.split('>')
-      targetNode = val[1].split('#')
+      val = node.split '>'             #  'Ts > Td # count'
+      targetNode = val[1].split '#'
       if val[0] in entryNode
         if val[0] of entryAndVal
           count = entryAndVal[val[0]] + targetNode[1] * 100
@@ -129,18 +129,18 @@ module.exports = class VizJsonNode
 
     srcToTargetList.concat(srcToTargetEntry)
 
-  # This method find all the entrypoint narrows
+  # This method find all the entrypoint from narrows
   findEntryNodes = (srcToTarget) ->
     endNodesList = []
     startNodeList = []
-    for index, node of srcToTarget
-      if node in endNodesList
+    for key, value of srcToTarget
+      if value in endNodesList
         continue
       else
-        endNodesList.push node.split('>')[1].split('#')[0]  # 'Ts> Td # count'
+        endNodesList.push value.split('>')[1].split('#')[0]  # 'Ts > Td # count' need td to push hence twice split
 
-    for index, node of srcToTarget
-      tempNode = node.split('>')[0]
+    for key, value of srcToTarget
+      tempNode = value.split('>')[0]
       if tempNode in endNodesList
         continue
       else
@@ -148,7 +148,7 @@ module.exports = class VizJsonNode
           startNodeList.push tempNode
     startNodeList
 
-  # This function creates the source to taget map which gets consumed to build required JSON for vizceral
+  # This function creates the source to target map which gets consumed to build required JSON for vizceral
   prepareJSON = (nodeList, srcToTargetList) ->
     output =
       renderer: 'global'
