@@ -99,17 +99,6 @@ class TrafficFlow extends React.Component {
     this.setState({ labelDimensions: dimensions });
   }
 
-  beginSampleData () {
-    request.get('topic_channel.json')
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        if (res && res.status === 200) {
-          this.traffic.clientUpdateTime = Date.now();
-          this.updateData(res.body);
-        }
-      });
-  }
-
   checkRoute () {
     const pathArray = window.location.pathname.split('/');
     const currentView = [];
@@ -123,7 +112,7 @@ class TrafficFlow extends React.Component {
   }
 
   fetchData () {
-    request.get('http://192.168.33.10:7880/vizc')
+    request.get('http://192.168.33.10:7880/vizc/vizc')
       .set('Accept', 'application/json')
       .end((req, res) => {
         if (res && res.status === 200) {

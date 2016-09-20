@@ -5,21 +5,18 @@ express = require 'express'
 bodyparser = require 'body-parser'
 varz = require 'express-varz'
 conf = require '../tracing_conf'
+
+app = express()
+app.use varz.trackExpressResponses()
+app.use bodyparser.json limit: '1mb'
+app.use bodyparser.urlencoded extended: true
+
+for route, configFn of require './routes'
+    do (route, configFn) ->
+        router = express.Router()
+        configFn router, app
+        app.use route, router
+
 port = conf.vizc_server_port
-vizJsonCreator = require './vizceral_json_file_creator_nodes'
-
-server = express()
-server.use bodyparser.json limit: '1mb'
-server.use bodyparser.urlencoded extended: true
-
-server.get '/vizc', (req, res, next) ->
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  vizJsonCreator.getJSON (err, data) ->
-    console.log err if err
-    res.write(data)
-    res.end()
-
-varz.setHttpServer server.listen port
-
+varz.setHttpServer app.listen port
 console.log "Listening on port: #{port}"

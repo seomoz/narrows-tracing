@@ -24,7 +24,7 @@ module.exports = class VizJsonNode
       nodeList = getNodeList srcToTarget
       srcToTargetList = getSourceToTargetList srcToTarget, entryhead, mapOfTopicToCount
       output = prepareJSON nodeList, srcToTargetList
-      callback null, JSON.stringify output
+      callback null, output
 
   # this function filters data and error data in two different lists based on the length of incoming data
   filterDataAndError = (allData) ->
@@ -36,7 +36,7 @@ module.exports = class VizJsonNode
     errors = []
     success = []
     for key, value of allData
-      {length} = value.split('|')
+      {length} = value.split '|'
       if length is 3 then errors.push value else success.push value
     [success, errors]
 
