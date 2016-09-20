@@ -1,7 +1,7 @@
-redis = require 'narrows/util/redis'
+redis = require('redis')
 _ = require 'underscore'
-{conf} = require 'rainier/conf'
-timeInterval = conf.get 'query_interval'
+conf = require '../tracing_conf'
+timeInterval = conf.query_interval
 ###
 This script will get data from redis and prepare JSON from it which can be consumed by
 Vizceral to display pipeline data flow. This script will consider every topic as node
@@ -9,12 +9,10 @@ Vizceral to display pipeline data flow. This script will consider every topic as
 ###
 
 module.exports = class VizJsonNode
-  @TRACKING_KEY_PREFIX: 'narrows'
-
   # This method prepares the JSON and sends it as return as and when requested
   @getJSON: (callback) ->
     lastSavedTime = Date.now() - timeInterval
-    redis.getClient().zrangebyscore 'narrows-tracing', lastSavedTime, Date.now(), (err, allData) ->
+    redis.createClient().zrangebyscore 'narrows-tracing', lastSavedTime, Date.now(), (err, allData) ->
       return callback err if err
 
       [success, errors] = filterDataAndError allData

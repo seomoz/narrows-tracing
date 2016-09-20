@@ -4,12 +4,12 @@ This server response to ui on a /vizc end point and returns queried JSON as repo
 express = require 'express'
 bodyparser = require 'body-parser'
 varz = require 'express-varz'
-{conf} = require 'rainier/conf'
-port = conf.get 'vizc_server_port'
+conf = require '../tracing_conf'
+port = conf.vizc_server_port
 vizJsonCreator = require './vizceral_json_file_creator_nodes'
 
 server = express()
-server.use bodyparser.json limit: '10mb'
+server.use bodyparser.json limit: '1mb'
 server.use bodyparser.urlencoded extended: true
 
 server.get '/vizc', (req, res, next) ->
