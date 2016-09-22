@@ -137,7 +137,7 @@ module.exports = class VizJsonNode
       if value in endNodesList
         continue
       else
-        endNodesList.push value.split('>')[1].split('#')[0]  # 'Ts > Td # count' need td to push hence twice split
+        endNodesList.push value.split('>')[1].split('#')[0]  # 'Ts > Td # count' , td to push
 
     for key, value of srcToTarget
       tempNode = value.split('>')[0]
