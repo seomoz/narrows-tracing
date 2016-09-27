@@ -1,7 +1,7 @@
 redis = require('redis')
 _ = require 'underscore'
-conf = require '../tracing_conf'
-timeInterval = conf.query_interval
+conf = require 'rainier/conf'
+timeInterval = conf.get 'query_interval'
 ###
 This script will get data from redis and prepare JSON from it which can be consumed by
 Vizceral to display pipeline data flow. This script will consider every topic as node
@@ -16,9 +16,9 @@ module.exports = class VizJsonNode
       return callback err if err
 
       [success, errors] = filterDataAndError allData
-      topicToCount = getErrorMapOfTopicToCount errors
-      traceIdToTopicChannel = getTopicToChannelbyId success
-      reducedMap = reduceMap traceIdToTopicChannel
+      topicToCount = getErrorsByTopic errors
+      topicToChannelbyId = getTopicToChannelbyId success
+      reducedMap = reduceMap topicToChannelbyId
       srcToTarget = getSourceToTarget reducedMap
       entryNode = findEntryNodes srcToTarget
       nodeList = getNodeList srcToTarget
@@ -40,8 +40,8 @@ module.exports = class VizJsonNode
       if length is 3 then errors.push value else success.push value
     [success, errors]
 
-  # this function gets the no of time error occured and creates a map based on that
-  getErrorMapOfTopicToCount = (errorData)->
+  # this function gets the number of time error occured and creates a map based on that
+  getErrorsByTopic = (errorData)->
     errorNodeMap = {}
     for key, value in errorData
       node = key.split('|')[1].split(':')[0]
@@ -51,17 +51,17 @@ module.exports = class VizJsonNode
 
   # This function creates a  map of key(traceId=revNo + Date.Now()) to the topic channel communication
   getTopicToChannelbyId = (success) ->
-    traceIdToTopicChannel = {}
+    topicToChannelbyId  = {}
     #for value, index in success
     for key, value in success
       successData = key.split '|'
-      data = successData[0..1].join('>')  # Ts:Cs>Td
+      data = successData[0..1].join '>'  # Ts:Cs>Td
       keyTrace = successData[2]
-      if keyTrace of traceIdToTopicChannel
-        traceIdToTopicChannel[keyTrace] = "#{traceIdToTopicChannel[keyTrace]},#{data}"
+      if keyTrace of topicToChannelbyId
+        topicToChannelbyId[keyTrace] = "#{topicToChannelbyId[keyTrace]},#{data}"
       else
-        traceIdToTopicChannel[keyTrace] = data
-    traceIdToTopicChannel
+        topicToChannelbyId[keyTrace] = data
+    topicToChannelbyId
 
   # This function reduces the map by bringing in count for repetition
   reduceMap = (traceIdToTopicChannel) ->
@@ -80,10 +80,9 @@ module.exports = class VizJsonNode
     size = _.keys(reducedMap).length
     outputList = []
     for key, value of reducedMap
-      [src, trg] = key.split '>'
+      [src, target] = key.split '>'
       source = src.split(':')[0]
-      target = trg
-      outputList.push("#{source}>#{target}##{reducedMap[key]}")
+      outputList.push "#{source}>#{target}##{reducedMap[key]}"
     outputList
 
   # Ths function prepares the nodeList for adding to JSON finally
@@ -92,10 +91,9 @@ module.exports = class VizJsonNode
     resultNodes.push 'narrows'
     for row in srcToTarget
       [first, rest] = row.split '>'
-      if first not in resultNodes
-        resultNodes.push first
-      if rest.split('#')[0] not in resultNodes
-        resultNodes.push rest.split('#')[0]
+      resultNodes.push first unless first in resultNodes
+      temp = rest.split('#')[0]
+      resultNodes.push temp unless temp in resultNodes
 
     for node in resultNodes
       name: node
@@ -106,18 +104,20 @@ module.exports = class VizJsonNode
     entryAndVal = {}
     srcToTargetList = for index, node of srcToTarget
       val = node.split '>'             #  'Ts > Td # count'
+      sourceTopic = val[0]
       targetNode = val[1].split '#'
-      if val[0] in entryNode
-        if val[0] of entryAndVal
-          count = entryAndVal[val[0]] + targetNode[1] * 100
-          entryAndVal[val[0]] = count
+      [destTopic, count] = val[1].split '#'
+      if sourceTopic in entryNode
+        if sourceTopic of entryAndVal
+          count = entryAndVal[sourceTopic] + count * 100
+          entryAndVal[sourceTopic] = count
         else
-          entryAndVal[val[0]] = targetNode[1] * 100
-      source: val[0]
-      target: targetNode[0]
+          entryAndVal[sourceTopic] = count * 100
+      source: sourceTopic
+      target: destTopic
       metrics:
-        danger: topicCounts[targetNode[0]] * 100
-        normal: targetNode[1] * 100
+        danger: topicCounts[destTopic] * 100
+        normal: count * 100
       class: 'normal'
 
     srcToTargetEntry = for node, index of entryAndVal
@@ -144,8 +144,7 @@ module.exports = class VizJsonNode
       if tempNode in endNodesList
         continue
       else
-        if tempNode not in startNodeList
-          startNodeList.push tempNode
+        startNodeList.push tempNode unless tempNode in startNodeList
     startNodeList
 
   # This function creates the source to target map which gets consumed to build required JSON for vizceral

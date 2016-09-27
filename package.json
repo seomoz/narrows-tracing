@@ -1,7 +1,7 @@
 {
-  "name": "vizceral-example",
-  "version": "2.4.0",
-  "description": "Vizceral example app",
+  "name": "narrows-tracing",
+  "version": "0.0.1",
+  "description": "narrows-tracing example app",
   "author": "Justin Reynolds <jreynolds@netflix.com>",
   "scripts": {
     "build": "webpack",
@@ -12,6 +12,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "babel-polyfill": "^6.13.0",
     "body-parser": "^1.13.2",
     "bootstrap": "^3.3.7",
     "es6-promise": "^3.3.1",
@@ -24,6 +25,7 @@
     "keypress.js": "^2.1.0-1",
     "lodash": "^4.15.0",
     "numeral": "^1.5.3",
+    "rainier": "git+ssh://git@github.com:seomoz/rainier.git#v0.4.22",
     "react": "^15.3.1",
     "react-addons-shallow-compare": "^15.3.1",
     "react-bootstrap": "^0.30.3",
