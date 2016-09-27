@@ -4,24 +4,19 @@
   "description": "Vizceral example app",
   "author": "Justin Reynolds <jreynolds@netflix.com>",
   "scripts": {
-    "clean": "rimraf dist && mkdirp dist",
-    "lint": "eslint src --ext .js --ext .jsx",
-    "copy:fonts": "cpx \"./node_modules/source-sans-pro/**/*\" ./dist/fonts",
-    "copy:json": "cpx \"./src/*.json\" ./dist",
-    "dev-server": "webpack-dev-server --host=0.0.0.0 --content-base dist/ --history-api-fallback",
-    "dev": "npm-run-all clean --parallel copy:* dev-server",
-    "validate": "npm ls"
+    "build": "webpack",
+    "start": "node_modules/.bin/coffee ./src/tracing/server.coffee"
   },
   "engines": {
     "node": "~4.4.0"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "bootstrap": "^3.3.7",
     "body-parser": "^1.13.2",
+    "bootstrap": "^3.3.7",
+    "es6-promise": "^3.3.1",
     "express": "^4.13.1",
     "express-varz": "git+ssh://git@github.com:seomoz/express-varz.git",
-    "express": "^4.13.1",
     "flux": "^2.1.1",
     "hammerjs": "^2.0.8",
     "jquery": "^3.1.0",
