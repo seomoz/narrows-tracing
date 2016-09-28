@@ -2,6 +2,7 @@ redis = require 'redis'
 _ = require 'underscore'
 conf = require 'rainier/conf'
 timeInterval = conf.get 'query_interval'
+[host, port] = [conf.get('redis:host'), conf.get('redis:port')]
 ###
 This script will get data from redis and prepare JSON from it which can be consumed by
 Vizceral to display pipeline data flow. This script will consider every topic as node
@@ -12,7 +13,7 @@ module.exports = class VizJsonNode
   # This method prepares the JSON and sends it as return as and when requested
   @getJSON: (callback) ->
     lastSavedTime = Date.now() - timeInterval
-    redis.createClient().zrangebyscore 'narrows-tracing', lastSavedTime, Date.now(), (err, allData) ->
+    redis.createClient(port, host).zrangebyscore 'narrows-tracing', lastSavedTime, Date.now(), (err, allData) ->
       return callback err if err
 
       [success, errors] = filterDataAndError allData
