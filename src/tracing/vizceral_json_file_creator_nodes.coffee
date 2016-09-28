@@ -1,4 +1,4 @@
-redis = require('redis')
+redis = require 'redis'
 _ = require 'underscore'
 conf = require 'rainier/conf'
 timeInterval = conf.get 'query_interval'

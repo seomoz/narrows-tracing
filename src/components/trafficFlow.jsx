@@ -112,7 +112,7 @@ class TrafficFlow extends React.Component {
   }
 
   fetchData () {
-    request.get('http://192.168.33.10:7880/vizc/vizc')
+    request.get('/vizc/vizc') 
       .set('Accept', 'application/json')
       .end((req, res) => {
         if (res && res.status === 200) {

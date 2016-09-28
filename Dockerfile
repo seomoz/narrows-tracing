@@ -1,15 +1,20 @@
-FROM mhart/alpine-node
+FROM node:5.6.0
 
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+MAINTAINER Manish Ranjan manish@moz.com
 
-# Install app dependencies
-COPY package.json /usr/src/app/
-RUN npm install
+RUN apt-get update && \
+  apt-get install -y wget git build-essential && \
+  ln -s /usr/bin/nodejs /usr/bin/node && \
+  mkdir -p /deploy/narrows-tracing/node_modules
 
-# Bundle app source
-COPY . /usr/src/app
+COPY ./node_modules /deploy/narrows-tracing/node_modules
+# Cache node_modules and source images separately
+COPY . /deploy/narrows-tracing/
 
-EXPOSE 8080
-CMD [ "npm", "run", "dev" ]
+WORKDIR /deploy/narrows-tracing
+
+RUN npm run build
+
+EXPOSE 7880
+
+CMD ["npm", "start"]
