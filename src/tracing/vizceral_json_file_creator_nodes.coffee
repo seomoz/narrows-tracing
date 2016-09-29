@@ -22,7 +22,7 @@ module.exports = class VizJsonNode
       reducedMap = reduceMap topicToChannelbyId
       srcToTarget = getSourceToTarget reducedMap
       entryNode = findEntryNodes srcToTarget
-      nodeList = getNodeList srcToTarget
+      nodeList = getNodes srcToTarget
       srcToTargetList = getSourceToTargetList srcToTarget, entryNode, topicToCount
       output = prepareJSON nodeList, srcToTargetList
       callback null, output
@@ -87,7 +87,7 @@ module.exports = class VizJsonNode
     outputList
 
   # Ths function prepares the nodeList for adding to JSON finally
-  getNodeList = (srcToTarget) ->
+  getNodes = (srcToTarget) ->
     resultNodes = []
     resultNodes.push 'narrows'
     for row in srcToTarget
@@ -110,15 +110,15 @@ module.exports = class VizJsonNode
       [destTopic, count] = val[1].split '#'
       if sourceTopic in entryNode
         if sourceTopic of entryAndVal
-          count = entryAndVal[sourceTopic] + count * 100
+          count = entryAndVal[sourceTopic] + count
           entryAndVal[sourceTopic] = count
         else
-          entryAndVal[sourceTopic] = count * 100
+          entryAndVal[sourceTopic] = count
       source: sourceTopic
       target: destTopic
       metrics:
-        danger: topicCounts[destTopic] * 100
-        normal: count * 100
+        danger: topicCounts[destTopic]
+        normal: count
       class: 'normal'
 
     srcToTargetEntry = for node, index of entryAndVal
