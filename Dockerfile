@@ -7,13 +7,19 @@ RUN apt-get update && \
   ln -s /usr/bin/nodejs /usr/bin/node && \
   mkdir -p /deploy/narrows-tracing/node_modules
 
-COPY ./node_modules /deploy/narrows-tracing/node_modules
-# Cache node_modules and source images separately
-COPY . /deploy/narrows-tracing/
 
 WORKDIR /deploy/narrows-tracing
 
+# Cache node_modules and source images separately
+COPY . /deploy/narrows-tracing/
+
+RUN npm install
+
 RUN npm run build
+
+COPY ./node_modules /deploy/narrows-tracing/node_modules
+
+COPY package.json /deploy/narrows-tracing/
 
 EXPOSE 7880
 
