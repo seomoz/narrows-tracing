@@ -132,17 +132,17 @@ module.exports = class VizJsonNode
 
   # This method find all the entrypoint from narrows
   findEntryNodes = (srcToTarget) ->
-    endNodesList = []
-    startNodeList = []
+    endNodes = []
+    startNodes = []
     for key, value of srcToTarget
-      if value in endNodesList
+      if value in endNodes
         continue
       else
-        endNodesList.push value.split('>')[1].split('#')[0]  # 'Ts > Td # count' , td to push
+        endNodes.push value.split('>')[1].split('#')[0]  # 'Ts > Td # count' , td to push
 
     for key, value of srcToTarget
       tempNode = value.split('>')[0]
-      if tempNode in endNodesList
+      if tempNode in endNodes
         continue
       else
         startNodeList.push tempNode unless tempNode in startNodeList
