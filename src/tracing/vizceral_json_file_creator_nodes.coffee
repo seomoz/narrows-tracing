@@ -22,9 +22,9 @@ module.exports = class VizJsonNode
       reducedMap = reduceMap topicToChannelbyId
       srcToTarget = getSourceToTarget reducedMap
       entryNode = findEntryNodes srcToTarget
-      nodeList = getNodes srcToTarget
-      srcToTargetList = getSourceToTargetList srcToTarget, entryNode, topicToCount
-      output = prepareJSON nodeList, srcToTargetList
+      nodesAll = getNodes srcToTarget
+      srcToTargetNodes = getSourceToTargetList srcToTarget, entryNode, topicToCount
+      output = prepareJSON nodesAll, srcToTargetNodes
       callback null, output
 
   # this function filters data and error data in two different lists based on the length of incoming data
@@ -149,7 +149,7 @@ module.exports = class VizJsonNode
     startNodeList
 
   # This function creates the source to target map which gets consumed to build required JSON for vizceral
-  prepareJSON = (nodeList, srcToTargetList) ->
+  prepareJSON = (nodesAll, srcToTargetNodes) ->
     output =
       renderer: 'global'
       name: 'edge'
@@ -163,8 +163,8 @@ module.exports = class VizJsonNode
         maxVolume: 5000
         class: "normal"
         updated: Date.now()
-        nodes: nodeList
-        connections: srcToTargetList
+        nodes: nodesAll
+        connections: srcToTargetNodes
       ]
       connections: [
         source: "INTERNET",
