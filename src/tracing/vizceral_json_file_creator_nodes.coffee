@@ -145,8 +145,8 @@ module.exports = class VizJsonNode
       if tempNode in endNodes
         continue
       else
-        startNodeList.push tempNode unless tempNode in startNodeList
-    startNodeList
+        startNodes.push tempNode unless tempNode in startNodes
+    startNodes
 
   # This function creates the source to target map which gets consumed to build required JSON for vizceral
   prepareJSON = (nodesAll, srcToTargetNodes) ->
