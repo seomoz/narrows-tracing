@@ -112,7 +112,7 @@ class TrafficFlow extends React.Component {
   }
 
   fetchData () {
-    request.get('/vizc/vizc') 
+    request.get('/vizc/vizc')
       .set('Accept', 'application/json')
       .end((req, res) => {
         if (res && res.status === 200) {
@@ -128,7 +128,7 @@ class TrafficFlow extends React.Component {
     this.checkRoute();
     this.fetchData();
 
-    setTimeout(() => {
+    setInterval(() => {
       this.fetchData();
     }, 60 * 1000);
     // Listen for changes to the stores

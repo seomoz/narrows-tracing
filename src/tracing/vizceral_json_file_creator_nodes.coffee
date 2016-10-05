@@ -22,7 +22,7 @@ module.exports = class VizJsonNode
       reducedMap = reduceMap topicToChannelbyId
       srcToTarget = getSourceToTarget reducedMap
       entryNode = findEntryNodes srcToTarget
-      nodesAll = getNodes srcToTarget
+      nodesAll = getNodes srcToTarget, topicToCount
       srcToTargetNodes = getSourceToTargetList srcToTarget, entryNode, topicToCount
       output = prepareJSON nodesAll, srcToTargetNodes
       callback null, output
@@ -45,6 +45,7 @@ module.exports = class VizJsonNode
   getErrorsByTopic = (errorData)->
     errorNodeMap = {}
     for key, value in errorData
+
       node = key.split('|')[1].split(':')[0]
       errorNodeMap[node] or= 0
       errorNodeMap[node]++
@@ -87,9 +88,11 @@ module.exports = class VizJsonNode
     outputList
 
   # Ths function prepares the nodeList for adding to JSON finally
-  getNodes = (srcToTarget) ->
+  getNodes = (srcToTarget, topicToCount) ->
     resultNodes = []
     resultNodes.push 'narrows'
+    for key, value of topicToCount
+      resultNodes.push key
     for row in srcToTarget
       [first, rest] = row.split '>'
       resultNodes.push first unless first in resultNodes
@@ -103,11 +106,13 @@ module.exports = class VizJsonNode
   # Ths function prepares the source to target mapping for adding to JSON finally
   getSourceToTargetList = (srcToTarget, entryNode, topicCounts) ->
     entryAndVal = {}
+    destTopics = []
     srcToTargetList = for index, node of srcToTarget
       val = node.split '>'             #  'Ts > Td # count'
       sourceTopic = val[0]
       targetNode = val[1].split '#'
       [destTopic, count] = val[1].split '#'
+      destTopics.push destTopic
       if sourceTopic in entryNode
         if sourceTopic of entryAndVal
           count = entryAndVal[sourceTopic] + count
@@ -121,11 +126,15 @@ module.exports = class VizJsonNode
         normal: count
       class: 'normal'
 
+    #Handling failure of external request directly to some topic . e.g store_to_s3, publish_to_fremont
+    for key, value of topicCounts
+      entryAndVal[key] = value unless key in destTopics
+
     srcToTargetEntry = for node, index of entryAndVal
       source: 'narrows'
       target: node
       metrics:
-        danger: 0
+        danger: topicCounts[node]
         normal: index
 
     srcToTargetList.concat(srcToTargetEntry)
