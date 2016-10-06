@@ -23,8 +23,8 @@ module.exports = class VizJsonNode
       srcToTarget = getSourceToTarget reducedMap
       entryNode = findEntryNodes srcToTarget
       nodesAll = getNodes srcToTarget, topicToCount
-      srcToTargetNodes = getSourceToTargetList srcToTarget, entryNode, topicToCount
-      output = prepareJSON nodesAll, srcToTargetNodes
+      [srcToTargetNodes, danger, normal]  = getSourceToTargetList srcToTarget, entryNode, topicToCount
+      output = prepareJSON nodesAll, srcToTargetNodes, danger, normal
       callback null, output
 
   # this function filters data and error data in two different lists based on the length of incoming data
@@ -107,6 +107,8 @@ module.exports = class VizJsonNode
   getSourceToTargetList = (srcToTarget, entryNode, topicCounts) ->
     entryAndVal = {}
     destTopics = []
+    danger = 0
+    normal = 0
     srcToTargetList = for index, node of srcToTarget
       val = node.split '>'             #  'Ts > Td # count'
       sourceTopic = val[0]
@@ -119,6 +121,8 @@ module.exports = class VizJsonNode
           entryAndVal[sourceTopic] = count
         else
           entryAndVal[sourceTopic] = count
+      danger += parseInt(topicCounts[destTopic], 10) if topicCounts[destTopic]
+      normal += parseInt(count, 10)
       source: sourceTopic
       target: destTopic
       metrics:
@@ -131,13 +135,14 @@ module.exports = class VizJsonNode
       entryAndVal[key] = value unless key in destTopics
 
     srcToTargetEntry = for node, index of entryAndVal
+      danger += parseInt(topicCounts[destTopic], 10) if topicCounts[destTopic]
+      normal += parseInt(index, 10)
       source: 'narrows'
       target: node
       metrics:
         danger: topicCounts[node]
         normal: index
-
-    srcToTargetList.concat(srcToTargetEntry)
+    [srcToTargetList.concat(srcToTargetEntry), danger, normal]
 
   # This method find all the entrypoint from narrows
   findEntryNodes = (srcToTarget) ->
@@ -158,7 +163,7 @@ module.exports = class VizJsonNode
     startNodes
 
   # This function creates the source to target map which gets consumed to build required JSON for vizceral
-  prepareJSON = (nodesAll, srcToTargetNodes) ->
+  prepareJSON = (nodesAll, srcToTargetNodes, danger, normal) ->
     output =
       renderer: 'global'
       name: 'edge'
@@ -179,8 +184,8 @@ module.exports = class VizJsonNode
         source: "INTERNET",
         target: "NARROWS",
         metrics: {
-          normal: 5000
-          danger: 0
+          normal: normal
+          danger: danger
         }
         notices:[]
         class: 'normal'
