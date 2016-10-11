@@ -5,6 +5,7 @@
   "author": "Justin Reynolds <jreynolds@netflix.com>",
   "scripts": {
     "build": "webpack",
+    "copy:fonts": "cpx \"./node_modules/source-sans-pro/**/*\" ./dist/fonts",
     "start": "node_modules/.bin/coffee ./src/tracing/server.coffee"
   },
   "engines": {
