@@ -25,6 +25,9 @@ COPY ./node_modules /deploy/narrows-tracing/node_modules
 #copying package.json to container
 COPY package.json /deploy/narrows-tracing/
 
+#copy fonts
+RUN npm run copy:fonts
+
 # server port on which teh service is exposed
 EXPOSE 7880
 
