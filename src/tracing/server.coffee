@@ -6,7 +6,6 @@ bodyparser = require 'body-parser'
 varz = require 'express-varz'
 conf = require 'rainier/conf'
 path = require 'path'
-{HTTP_PREFIX} = conf.get()
 
 app = express()
 app.use varz.trackExpressResponses()
@@ -23,7 +22,6 @@ app.use express.static 'dist'
 app.get '/', (req, res, next) ->
   res.sendFile(path.resolve('dist/index.html'));
 
-server.use HTTP_PREFIX, app
 port = conf.get 'vizc_server_port'
 varz.setHttpServer app.listen port
 console.log "Listening on port: #{port}"
