@@ -90,6 +90,7 @@ module.exports = class VizJsonNode
   # Ths function prepares the nodeList for adding to JSON finally
   getNodes = (srcToTarget, topicToCount) ->
     resultNodes = []
+    filterNodes = []
     resultNodes.push 'narrows'
     for key, value of topicToCount
       resultNodes.push key
@@ -98,8 +99,9 @@ module.exports = class VizJsonNode
       resultNodes.push first unless first in resultNodes
       temp = rest.split('#')[0]
       resultNodes.push temp unless temp in resultNodes
-
     for node in resultNodes
+      filterNodes.push node if node.indexOf('-') is -1
+    for node in filterNodes
       name: node
       class: 'normal'
 
