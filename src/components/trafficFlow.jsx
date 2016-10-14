@@ -112,7 +112,7 @@ class TrafficFlow extends React.Component {
   }
 
   fetchData () {
-    request.get('/vizc/vizc')
+    request.get('local/narrows-tracing/vizc/vizc')
       .set('Accept', 'application/json')
       .end((req, res) => {
         if (res && res.status === 200) {

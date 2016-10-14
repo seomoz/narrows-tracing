@@ -14,7 +14,7 @@ module.exports =
   devtool: 'source-map'
   entry: './src/app.jsx'
   output:
-    path: path.join(__dirname, '/local/narrows-tracing/dist')
+    path: path.join(__dirname, '/dist')
     publicPath: "#{HTTP_PREFIX}/dist/"
     filename: 'vizceral.[hash].bundle.js'
   resolve:

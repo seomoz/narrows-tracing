@@ -4,7 +4,7 @@
   "description": "Vizceral example app",
   "author": "Justin Reynolds <jreynolds@netflix.com>",
   "scripts": {
-    "build": "webpack",
+    "build": "node_modules/.bin/coffee -c webpack.production.coffee && node_modules/webpack/bin/webpack.js --config webpack.production.js --progress --display-modules",
     "copy:fonts": "cpx \"./node_modules/source-sans-pro/**/*\" ./dist/fonts",
     "start": "node_modules/.bin/coffee ./src/tracing/server.coffee"
   },
@@ -27,6 +27,7 @@
     "keymirror": "^0.1.1",
     "keypress.js": "^2.1.0-1",
     "lodash": "^4.15.0",
+    "morgan": "^1.6.1",
     "numeral": "^1.5.3",
     "react": "^15.3.1",
     "react-addons-shallow-compare": "^15.3.1",
