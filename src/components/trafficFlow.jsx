@@ -99,17 +99,6 @@ class TrafficFlow extends React.Component {
     this.setState({ labelDimensions: dimensions });
   }
 
-  beginSampleData () {
-    request.get('sample_data.json')
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        if (res && res.status === 200) {
-          this.traffic.clientUpdateTime = Date.now();
-          this.updateData(res.body);
-        }
-      });
-  }
-
   checkRoute () {
     const pathArray = window.location.pathname.split('/');
     const currentView = [];
@@ -122,11 +111,26 @@ class TrafficFlow extends React.Component {
     this.setState({ currentView: currentView });
   }
 
+  fetchData () {
+    request.get('local/narrows-tracing/vizc/vizc')
+      .set('Accept', 'application/json')
+      .end((req, res) => {
+        if (res && res.status === 200) {
+          const body = JSON.parse(res.text);
+          this.traffic.clientUpdateTime = Date.now();
+          this.updateData(body);
+        }
+      });
+  }
+
   componentDidMount () {
     // Check the location bar for any direct routing information
     this.checkRoute();
-    this.beginSampleData();
+    this.fetchData();
 
+    setInterval(() => {
+      this.fetchData();
+    }, 60 * 1000);
     // Listen for changes to the stores
     filterStore.addChangeListener(this.filtersChanged);
   }

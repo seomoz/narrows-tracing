@@ -23,7 +23,7 @@ function fontsActive () {
 WebFont.load({
   custom: {
     families: ['Source Sans Pro:n3,n4,n6,n7'],
-    urls: ['/fonts/source-sans-pro.css']
+    urls: ['/local/narrows-tracing/dist/fonts/source-sans-pro.css']
   },
   active: fontsActive
 });

@@ -1,15 +1,35 @@
-FROM mhart/alpine-node
+FROM node:5.6.0
 
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+MAINTAINER Manish Ranjan manish@moz.com
 
-# Install app dependencies
-COPY package.json /usr/src/app/
+RUN apt-get update && \
+  apt-get install -y wget git build-essential && \
+  ln -s /usr/bin/nodejs /usr/bin/node && \
+  mkdir -p /deploy/narrows-tracing/node_modules
+
+
+WORKDIR /deploy/narrows-tracing
+
+# Cache node_modules and source images separately
+COPY . /deploy/narrows-tracing/
+
+# npm-install
 RUN npm install
 
-# Bundle app source
-COPY . /usr/src/app
+# Now building the package
+RUN npm run build
 
-EXPOSE 8080
-CMD [ "npm", "run", "dev" ]
+#copy all the node modules to container
+COPY ./node_modules /deploy/narrows-tracing/node_modules
+
+#copying package.json to container
+COPY package.json /deploy/narrows-tracing/
+
+#copy fonts
+RUN npm run copy:fonts
+
+# server port on which teh service is exposed
+EXPOSE 7880
+
+# start the server
+CMD ["npm", "start"]

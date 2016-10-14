@@ -1,8 +1,10 @@
 /* globals __dirname process */
 'use strict';
+//had to added this after facing this error on vagrant Module build failed: ReferenceError: Promise is not defined
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+require('es6-promise').polyfill()
 
 module.exports = {
   devtool: 'source-map',

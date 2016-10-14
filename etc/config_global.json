@@ -1,0 +1,9 @@
+{
+    "query_interval": 1800000,
+    "vizc_server_port": 7880,
+    "redis": {
+       "host": "127.0.0.1",
+       "port": 6379
+    },
+    "HTTP_PREFIX": "/local/narrows-tracing"
+}
